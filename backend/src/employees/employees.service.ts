@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { QueryFailedError } from 'typeorm';
 import { EmployeesRepository } from './employees.repository';
 import { Employee } from './entities/employee.entity';
@@ -6,12 +12,21 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { QueryEmployeesDto } from './dto/query-employees.dto';
 import { EmployeeResponse, EmployeeSummary, PagedResult, toEmployeeResponse } from './dto/employee-response.dto';
+import { AppLoggerService } from '../common/logger/app-logger.service';
+import { AppConfig } from '../config/configuration';
 
 const POSTGRES_UNIQUE_VIOLATION = '23505';
+// Probability of a simulated failure when the simulation is active, for the
+// "intermittent failure" error-handling challenge — see README "Error Handling".
+const SIMULATED_FAILURE_RATE = 0.3;
 
 @Injectable()
 export class EmployeesService {
-  constructor(private readonly employeesRepository: EmployeesRepository) {}
+  constructor(
+    private readonly employeesRepository: EmployeesRepository,
+    private readonly configService: ConfigService<AppConfig, true>,
+    private readonly logger: AppLoggerService,
+  ) {}
 
   async findAll(query: QueryEmployeesDto): Promise<PagedResult<EmployeeResponse>> {
     const { items, total } = await this.employeesRepository.findPaged(query);
@@ -32,7 +47,22 @@ export class EmployeesService {
     return toEmployeeResponse(employee);
   }
 
-  async create(dto: CreateEmployeeDto): Promise<EmployeeResponse> {
+  async create(
+    dto: CreateEmployeeDto,
+    options: { correlationId?: string; forceSimulateFailure?: boolean } = {},
+  ): Promise<EmployeeResponse> {
+    if (this.shouldSimulateFailure(options.forceSimulateFailure)) {
+      // Deliberately fail before touching the DB — see README "Error Handling &
+      // Debugging Challenge" for why this exists and how to trigger it.
+      this.logger.error({
+        event: 'employee_create_failed',
+        correlationId: options.correlationId,
+        errorName: 'SimulatedCreateFailure',
+        errorMessage: 'Intermittent failure simulation triggered',
+      });
+      throw new InternalServerErrorException();
+    }
+
     try {
       const employee = await this.employeesRepository.create(this.toEntityData(dto));
       return toEmployeeResponse(employee);
@@ -74,6 +104,19 @@ export class EmployeesService {
       ...rest,
       ...(salary !== undefined ? { salary: salary.toFixed(2) } : {}),
     };
+  }
+
+  private shouldSimulateFailure(forceParam?: boolean): boolean {
+    const globallyEnabled = this.configService.get('simulateCreateFailures', { infer: true });
+    const nodeEnv = this.configService.get('nodeEnv', { infer: true });
+    // The per-request override only works outside production, so it can never be
+    // used to induce failures against a real deployment.
+    const requestEnabled = forceParam === true && nodeEnv !== 'production';
+
+    if (!globallyEnabled && !requestEnabled) {
+      return false;
+    }
+    return Math.random() < SIMULATED_FAILURE_RATE;
   }
 
   private mapWriteError(error: unknown): Error {

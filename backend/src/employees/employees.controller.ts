@@ -11,7 +11,9 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -37,9 +39,18 @@ export class EmployeesController {
     return this.employeesService.findOne(id);
   }
 
+  // ?simulateFailure=true is a dev-only affordance for the error-handling challenge
+  // (see README) — EmployeesService only honors it outside production.
   @Post()
-  create(@Body() dto: CreateEmployeeDto) {
-    return this.employeesService.create(dto);
+  create(
+    @Body() dto: CreateEmployeeDto,
+    @Req() req: Request & { correlationId?: string },
+    @Query('simulateFailure') simulateFailure?: string,
+  ) {
+    return this.employeesService.create(dto, {
+      correlationId: req.correlationId,
+      forceSimulateFailure: simulateFailure === 'true',
+    });
   }
 
   // PATCH is primary (partial updates from an edit form); PUT is aliased to the

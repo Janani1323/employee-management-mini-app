@@ -7,6 +7,7 @@ import configuration, { AppConfig } from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { Employee } from './employees/entities/employee.entity';
 import { EmployeesModule } from './employees/employees.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EmployeesModule } from './employees/employees.module';
         };
       },
     }),
+    CommonModule,
     EmployeesModule,
   ],
   controllers: [AppController],
