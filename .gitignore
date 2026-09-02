@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build output
+dist/
+build/
+frontend/dist/
+backend/dist/
+frontend/.angular/cache/
+tmp/
+out-tsc/
+
+# Test coverage
+coverage/
+frontend/coverage/
+backend/coverage/
+
+# Environment files (never commit real secrets)
+.env
+.env.local
+*.env.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Claude Code local settings
+.claude/
+
+# Editors / OS
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
