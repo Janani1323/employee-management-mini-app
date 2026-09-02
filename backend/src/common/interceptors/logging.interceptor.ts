@@ -1,4 +1,9 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
@@ -9,7 +14,9 @@ export class LoggingInterceptor implements NestInterceptor {
   constructor(private readonly logger: AppLoggerService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const request = context.switchToHttp().getRequest<Request & { correlationId?: string }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { correlationId?: string }>();
     const response = context.switchToHttp().getResponse<Response>();
 
     request.correlationId = randomUUID();

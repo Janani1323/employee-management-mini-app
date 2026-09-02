@@ -8,7 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<AppConfig, true>);
 
-  app.enableCors({ origin: configService.get('frontendOrigin', { infer: true }) });
+  app.enableCors({
+    origin: configService.get('frontendOrigin', { infer: true }),
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,4 +23,4 @@ async function bootstrap() {
 
   await app.listen(configService.get('port', { infer: true }));
 }
-bootstrap();
+void bootstrap();

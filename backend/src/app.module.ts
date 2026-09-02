@@ -19,7 +19,9 @@ import { FundamentalsModule } from './fundamentals/fundamentals.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<{ db: AppConfig['db'] }, true>) => {
+      useFactory: (
+        configService: ConfigService<{ db: AppConfig['db'] }, true>,
+      ) => {
         const db = configService.get('db', { infer: true });
         return {
           type: 'postgres' as const,

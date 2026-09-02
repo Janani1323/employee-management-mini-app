@@ -23,9 +23,12 @@ export class EmployeesRepository {
     const qb = this.repo.createQueryBuilder('employee');
 
     if (search) {
-      qb.andWhere('(employee.name ILIKE :search OR employee.email ILIKE :search)', {
-        search: `%${search}%`,
-      });
+      qb.andWhere(
+        '(employee.name ILIKE :search OR employee.email ILIKE :search)',
+        {
+          search: `%${search}%`,
+        },
+      );
     }
     if (department) {
       qb.andWhere('employee.department = :department', { department });
@@ -79,7 +82,10 @@ export class EmployeesRepository {
     const totals = await this.repo
       .createQueryBuilder('employee')
       .select('COUNT(*)', 'totalEmployees')
-      .addSelect(`COUNT(*) FILTER (WHERE employee.status = 'Active')`, 'activeEmployees')
+      .addSelect(
+        `COUNT(*) FILTER (WHERE employee.status = 'Active')`,
+        'activeEmployees',
+      )
       .addSelect('COALESCE(SUM(employee.salary), 0)', 'totalSalary')
       .addSelect('COALESCE(AVG(employee.salary), 0)', 'averageSalary')
       .addSelect('COALESCE(MAX(employee.salary), 0)', 'highestSalary')

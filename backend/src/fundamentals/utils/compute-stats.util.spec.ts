@@ -3,9 +3,24 @@ import { EmployeeStatus } from '../../employees/enums/employee-status.enum';
 import { FundamentalsEmployee } from './types';
 
 const employees: FundamentalsEmployee[] = [
-  { id: '1', salary: 50_000, status: EmployeeStatus.ACTIVE, department: 'Engineering' },
-  { id: '2', salary: 30_000, status: EmployeeStatus.INACTIVE, department: 'Sales' },
-  { id: '3', salary: 70_000, status: EmployeeStatus.ACTIVE, department: 'Engineering' },
+  {
+    id: '1',
+    salary: 50_000,
+    status: EmployeeStatus.ACTIVE,
+    department: 'Engineering',
+  },
+  {
+    id: '2',
+    salary: 30_000,
+    status: EmployeeStatus.INACTIVE,
+    department: 'Sales',
+  },
+  {
+    id: '3',
+    salary: 70_000,
+    status: EmployeeStatus.ACTIVE,
+    department: 'Engineering',
+  },
 ];
 
 describe('computeStats', () => {

@@ -56,12 +56,18 @@ export class EmployeesController {
   // PATCH is primary (partial updates from an edit form); PUT is aliased to the
   // same handler for spec-literal compliance since both fully replace-or-merge here.
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEmployeeDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateEmployeeDto,
+  ) {
     return this.employeesService.update(id, dto);
   }
 
   @Put(':id')
-  replace(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEmployeeDto) {
+  replace(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateEmployeeDto,
+  ) {
     return this.employeesService.update(id, dto);
   }
 

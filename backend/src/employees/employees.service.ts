@@ -11,7 +11,12 @@ import { Employee } from './entities/employee.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { QueryEmployeesDto } from './dto/query-employees.dto';
-import { EmployeeResponse, EmployeeSummary, PagedResult, toEmployeeResponse } from './dto/employee-response.dto';
+import {
+  EmployeeResponse,
+  EmployeeSummary,
+  PagedResult,
+  toEmployeeResponse,
+} from './dto/employee-response.dto';
 import { AppLoggerService } from '../common/logger/app-logger.service';
 import { AppConfig } from '../config/configuration';
 
@@ -28,7 +33,9 @@ export class EmployeesService {
     private readonly logger: AppLoggerService,
   ) {}
 
-  async findAll(query: QueryEmployeesDto): Promise<PagedResult<EmployeeResponse>> {
+  async findAll(
+    query: QueryEmployeesDto,
+  ): Promise<PagedResult<EmployeeResponse>> {
     const { items, total } = await this.employeesRepository.findPaged(query);
     return {
       items: items.map(toEmployeeResponse),
@@ -64,7 +71,9 @@ export class EmployeesService {
     }
 
     try {
-      const employee = await this.employeesRepository.create(this.toEntityData(dto));
+      const employee = await this.employeesRepository.create(
+        this.toEntityData(dto),
+      );
       return toEmployeeResponse(employee);
     } catch (error) {
       throw this.mapWriteError(error);
@@ -77,7 +86,10 @@ export class EmployeesService {
       throw new NotFoundException('Employee not found');
     }
     try {
-      const updated = await this.employeesRepository.update(employee, this.toEntityData(dto));
+      const updated = await this.employeesRepository.update(
+        employee,
+        this.toEntityData(dto),
+      );
       return toEmployeeResponse(updated);
     } catch (error) {
       throw this.mapWriteError(error);
@@ -98,7 +110,9 @@ export class EmployeesService {
 
   // TypeORM's `numeric` columns are typed as `string` (to avoid float precision loss),
   // while the DTO/API boundary uses `number`; convert only when a salary is present.
-  private toEntityData(dto: CreateEmployeeDto | UpdateEmployeeDto): Partial<Employee> {
+  private toEntityData(
+    dto: CreateEmployeeDto | UpdateEmployeeDto,
+  ): Partial<Employee> {
     const { salary, ...rest } = dto;
     return {
       ...rest,
@@ -107,7 +121,9 @@ export class EmployeesService {
   }
 
   private shouldSimulateFailure(forceParam?: boolean): boolean {
-    const globallyEnabled = this.configService.get('simulateCreateFailures', { infer: true });
+    const globallyEnabled = this.configService.get('simulateCreateFailures', {
+      infer: true,
+    });
     const nodeEnv = this.configService.get('nodeEnv', { infer: true });
     // The per-request override only works outside production, so it can never be
     // used to induce failures against a real deployment.
@@ -124,7 +140,9 @@ export class EmployeesService {
       error instanceof QueryFailedError &&
       (error as unknown as { code?: string }).code === POSTGRES_UNIQUE_VIOLATION
     ) {
-      return new ConflictException('An employee with this email already exists');
+      return new ConflictException(
+        'An employee with this email already exists',
+      );
     }
     return error as Error;
   }

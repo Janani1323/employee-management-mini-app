@@ -16,7 +16,9 @@ const MEDIUM_THRESHOLD = 20_000;
  * Medium 20,000-30,000 inclusive; Low < 20,000 — per the assessment's explicit
  * requirement to demonstrate this pattern rather than map/filter/reduce.
  */
-export function categorizeSalary(employees: FundamentalsEmployee[]): CategorizedEmployee[] {
+export function categorizeSalary(
+  employees: FundamentalsEmployee[],
+): CategorizedEmployee[] {
   const result: CategorizedEmployee[] = [];
 
   for (let i = 0; i < employees.length; i++) {

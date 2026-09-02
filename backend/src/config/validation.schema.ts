@@ -6,7 +6,9 @@ export const validationSchema = Joi.object({
     .default('development'),
   BACKEND_PORT: Joi.number().default(3000),
   FRONTEND_ORIGIN: Joi.string().default('http://localhost:4200'),
-  SIMULATE_CREATE_FAILURES: Joi.string().valid('true', 'false').default('false'),
+  SIMULATE_CREATE_FAILURES: Joi.string()
+    .valid('true', 'false')
+    .default('false'),
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().required(),
   DB_NAME: Joi.string().required(),

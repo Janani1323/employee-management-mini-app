@@ -70,7 +70,9 @@ async function seed() {
     return;
   }
 
-  console.log(`Seeding ${TOTAL_EMPLOYEES} employees in batches of ${BATCH_SIZE}...`);
+  console.log(
+    `Seeding ${TOTAL_EMPLOYEES} employees in batches of ${BATCH_SIZE}...`,
+  );
 
   let inserted = 0;
   for (let start = 0; start < TOTAL_EMPLOYEES; start += BATCH_SIZE) {
@@ -79,7 +81,12 @@ async function seed() {
     for (let i = 0; i < batchCount; i++) {
       batch.push(randomEmployee(start + i));
     }
-    await repo.createQueryBuilder().insert().into(Employee).values(batch).execute();
+    await repo
+      .createQueryBuilder()
+      .insert()
+      .into(Employee)
+      .values(batch)
+      .execute();
     inserted += batchCount;
     console.log(`  inserted ${inserted}/${TOTAL_EMPLOYEES}`);
   }

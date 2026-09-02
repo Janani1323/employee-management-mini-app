@@ -12,7 +12,8 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [Employee],
   migrations: [__dirname + '/migrations/*.{ts,js}'],
   synchronize: false,
-  logging: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  logging:
+    process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 };
 
 const dataSource = new DataSource(dataSourceOptions);
