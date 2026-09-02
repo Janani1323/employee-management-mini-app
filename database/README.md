@@ -33,4 +33,15 @@ Indexes (see migration file for the authoritative DDL and inline comments):
 3. Composite btree on `(department, status)` — supports the combined filter and department-only filter.
 4. Composite btree on `(joining_date DESC, id ASC)` — supports the deterministic pagination order without a full sort per page.
 
-_This file is a pointer/summary — filled in fully once the migration (Phase 2) lands._
+## Seed data
+
+`npm run seed` inserts 10,500 sample employees (~1,300 per department, ~75% Active / 25% Inactive) in
+chunked batches of 1,000. It's idempotent-safe against accidental double-runs: it checks the row count
+first and skips seeding (with a message) if the table is already populated, rather than duplicating data.
+
+## Verified index usage (`EXPLAIN`)
+
+- `ORDER BY joining_date DESC, id ASC LIMIT/OFFSET` → `Index Scan using idx_employees_pagination`.
+- `name ILIKE '%selective-term%'` → `Bitmap Index Scan on idx_employees_name_trgm` (a low-selectivity
+  term like `%an%` correctly falls back to a sequential scan — the planner's call, not a bug).
+- `department = 'X' AND status = 'Y'` → `Bitmap Index Scan on idx_employees_dept_status`.
