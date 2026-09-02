@@ -8,6 +8,7 @@ import { validationSchema } from './config/validation.schema';
 import { Employee } from './employees/entities/employee.entity';
 import { EmployeesModule } from './employees/employees.module';
 import { CommonModule } from './common/common.module';
+import { FundamentalsModule } from './fundamentals/fundamentals.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CommonModule } from './common/common.module';
     }),
     CommonModule,
     EmployeesModule,
+    FundamentalsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

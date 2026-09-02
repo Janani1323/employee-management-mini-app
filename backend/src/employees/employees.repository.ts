@@ -50,6 +50,14 @@ export class EmployeesRepository {
     return this.repo.findOne({ where: { email } });
   }
 
+  /**
+   * A small, bounded sample for the fundamentals demo endpoint — never the
+   * full table. Ordered by id for a stable, arbitrary-but-repeatable sample.
+   */
+  findSample(limit: number): Promise<Employee[]> {
+    return this.repo.find({ order: { id: 'ASC' }, take: limit });
+  }
+
   create(data: Partial<Employee>): Promise<Employee> {
     const employee = this.repo.create(data);
     return this.repo.save(employee);
