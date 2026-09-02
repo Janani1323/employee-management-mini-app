@@ -1,0 +1,98 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Employees</h1>
+    <a routerLink="/employees/new" class="primary-button">Add employee</a>
+  </header>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search by name or email…"
+      [formControl]="searchControl"
+      aria-label="Search by name or email"
+    />
+    <select [formControl]="departmentControl" aria-label="Filter by department">
+      <option value="">All departments</option>
+      @for (dept of departments; track dept) {
+        <option [value]="dept">{{ dept }}</option>
+      }
+    </select>
+    <select [formControl]="statusControl" aria-label="Filter by status">
+      <option value="">All statuses</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+    </select>
+  </div>
+
+  @if (deleteError()) {
+    <app-error-banner [message]="deleteError()" [showRetry]="false" />
+  }
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <app-loading-spinner />
+    }
+    @case ('error') {
+      <app-error-banner [message]="errorMessage()" (retry)="retry()" />
+    }
+    @case ('empty') {
+      <app-empty-state message="No employees match your search or filters." />
+    }
+    @case ('loaded') {
+      <table class="employee-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th>Joined</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employee of employees(); track employee.id) {
+            <tr>
+              <td>{{ employee.name }}</td>
+              <td>{{ employee.email }}</td>
+              <td>{{ employee.department }}</td>
+              <td>{{ employee.designation }}</td>
+              <td>{{ employee.salary | number: '1.0-2' }}</td>
+              <td>{{ employee.joiningDate }}</td>
+              <td>
+                <span class="status-badge" [class.inactive]="employee.status === 'Inactive'">
+                  {{ employee.status }}
+                </span>
+              </td>
+              <td class="row-actions">
+                <a [routerLink]="['/employees', employee.id, 'edit']">Edit</a>
+                <button type="button" class="link-button" (click)="requestDelete(employee.id)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 1">
+          Previous
+        </button>
+        <span>Page {{ page() }} of {{ totalPages }} ({{ total() }} employees)</span>
+        <button type="button" (click)="goToPage(page() + 1)" [disabled]="page() === totalPages">
+          Next
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<app-confirm-dialog
+  [open]="deleteTargetId() !== null"
+  message="Delete this employee? This can't be undone."
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+/>
