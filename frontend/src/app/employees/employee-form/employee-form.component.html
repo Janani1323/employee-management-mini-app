@@ -1,0 +1,92 @@
+<div class="page">
+  <header class="page-header">
+    <h1>{{ isEditMode ? 'Edit employee' : 'Add employee' }}</h1>
+    <a routerLink="/">Back to list</a>
+  </header>
+
+  @if (loadingEmployee()) {
+    <app-loading-spinner />
+  } @else if (loadError()) {
+    <app-error-banner [message]="loadError()" [showRetry]="false" />
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (submitError()) {
+        <app-error-banner [message]="submitError()" [showRetry]="false" />
+      }
+
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" type="text" formControlName="name" />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <span class="field-error">Name is required.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" />
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <span class="field-error">Email is required.</span>
+        }
+        @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <span class="field-error">Enter a valid email address.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="department">Department</label>
+        <select id="department" formControlName="department">
+          <option value="" disabled>Select a department</option>
+          @for (dept of departments; track dept) {
+            <option [value]="dept">{{ dept }}</option>
+          }
+        </select>
+        @if (form.controls.department.invalid && form.controls.department.touched) {
+          <span class="field-error">Department is required.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="designation">Designation</label>
+        <input id="designation" type="text" formControlName="designation" />
+        @if (form.controls.designation.invalid && form.controls.designation.touched) {
+          <span class="field-error">Designation is required.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="salary">Salary</label>
+        <input id="salary" type="number" step="0.01" min="0.01" formControlName="salary" />
+        @if (form.controls.salary.touched && form.controls.salary.hasError('required')) {
+          <span class="field-error">Salary is required.</span>
+        }
+        @if (form.controls.salary.touched && form.controls.salary.hasError('min')) {
+          <span class="field-error">Salary must be a positive number.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="joiningDate">Joining date</label>
+        <input id="joiningDate" type="date" formControlName="joiningDate" />
+        @if (form.controls.joiningDate.invalid && form.controls.joiningDate.touched) {
+          <span class="field-error">Joining date is required.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <a routerLink="/" class="secondary-button">Cancel</a>
+        <button type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>
